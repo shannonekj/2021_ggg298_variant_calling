@@ -5,7 +5,7 @@ rule all:
 rule copy_data:
     output: "SRR2584857_1.n100000.fq"
     shell:
-        "ln -s ~/298class5/yeast/SRR2584857_1.n100000.fq ."
+        "ln -s ~/298class5/yeast/data/SRR2584857_1.n100000.fq ."
 
 rule download_genome:
     output:
