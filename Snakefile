@@ -21,7 +21,6 @@ rule uncompress_genome:
 
 rule index_genome_bwa:
     input: "ecoli-rel606.fa"
-    conda: "env.yml"
     output:
         "ecoli-rel606.fa.amb",
         "ecoli-rel606.fa.ann",
@@ -34,6 +33,7 @@ rule index_genome_bwa:
 rule map_reads:
     input:
         ref='ecoli-rel606.fa',
+        z='ecoli-rel606.fa.amb',
         sample='SRR2584857_1.n100000.fq'
     output:
         "SRR2584857_1.n100000.sam"
@@ -47,7 +47,7 @@ rule index_genome_samtools:
         "ecoli-rel606.fa.fai"
     shell:
         "samtools faidx {input}"
-
+        
 rule samtools_import:
     input:
         gen='ecoli-rel606.fa.fai',
@@ -64,7 +64,7 @@ rule samtools_sort:
         "SRR2584857_1.n100000.sorted.bam"
     shell:
         "samtools sort {input} -o {output}"
-        
+
 rule samtools_index_sorted:
     input: "SRR2584857_1.n100000.sorted.bam"
     output: "SRR2584857_1.n100000.sorted.bam.bai"
