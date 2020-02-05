@@ -5,7 +5,7 @@ rule all:
 rule copy_data:
     output: "SRR2584857_1.n100000.fq"
     shell:
-        "ln -s ~/298class5/yeast/SRR2584857_1.n100000.fq ."
+        "ln -s ~/298class5/yeast/data/SRR2584857_1.n100000.fq ."
 
 rule download_genome:
     output:
@@ -27,6 +27,7 @@ rule index_genome_bwa:
         "ecoli-rel606.fa.bwt",
         "ecoli-rel606.fa.pac",
         "ecoli-rel606.fa.sa"
+    conda: 'env.yml'
     shell:
         "bwa index {input}"
 
@@ -37,6 +38,7 @@ rule map_reads:
         sample='SRR2584857_1.n100000.fq'
     output:
         "SRR2584857_1.n100000.sam"
+    conda: 'env.yml'
     shell:
         "bwa mem -t 4 {input.ref} {input.sample} > {output}"
 
@@ -45,6 +47,7 @@ rule index_genome_samtools:
         "ecoli-rel606.fa"
     output:
         "ecoli-rel606.fa.fai"
+    conda: 'env.yml'
     shell:
         "samtools faidx {input}"
         
@@ -54,6 +57,7 @@ rule samtools_import:
         sample='SRR2584857_1.n100000.sam'
     output:
         "SRR2584857_1.n100000.bam"
+    conda: 'env.yml'
     shell:
         "samtools import {input.gen} {input.sample} {output}"
 
@@ -62,12 +66,14 @@ rule samtools_sort:
         "SRR2584857_1.n100000.bam"
     output:
         "SRR2584857_1.n100000.sorted.bam"
+    conda: 'env.yml'
     shell:
         "samtools sort {input} -o {output}"
 
 rule samtools_index_sorted:
     input: "SRR2584857_1.n100000.sorted.bam"
     output: "SRR2584857_1.n100000.sorted.bam.bai"
+    conda: 'env.yml'
     shell: "samtools index {input}"
 
 rule samtools_mpileup:
@@ -75,6 +81,7 @@ rule samtools_mpileup:
         ref='ecoli-rel606.fa',
         sample='SRR2584857_1.n100000.sorted.bam'
     output: "variants.raw.bcf"
+    conda: 'env.yml'
     shell:
         """samtools mpileup -u -t DP -f {input.ref} {input.sample} | \
         bcftools call -mv -Ob -o - > {output}"""
@@ -82,4 +89,5 @@ rule samtools_mpileup:
 rule make_vcf:
     input: "variants.raw.bcf"
     output: "variants.vcf"
+    conda: 'env.yml'
     shell: "bcftools view {input} > {output}"
