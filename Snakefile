@@ -59,7 +59,7 @@ rule samtools_import:
         "SRR2584857_1.n100000.bam"
     conda: 'env.yml'
     shell:
-        "samtools import {input.gen} {input.sample} {output}"
+        "samtools view -bt {input.gen} -o {output} {input.sample}"
 
 rule samtools_sort:
     input:
